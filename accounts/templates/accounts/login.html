@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Каустик-Заказ — Вход{% endblock %}
+{% block content %}
+  <section class="section">
+    <h2>Вход в систему</h2>
+    <p class="lead">Для зарегистрированных пользователей и менеджера.</p>
+
+    <div class="card form-card">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+          <label>Логин</label>
+          {{ form.username }}
+        </div>
+        <div class="field">
+          <label>Пароль</label>
+          {{ form.password }}
+        </div>
+        <button class="btn btn-primary" type="submit">Войти</button>
+        <p class="muted" style="margin-top:16px; font-size:13px;">
+          Нет аккаунта? <a href="{% url 'accounts:register' %}">Зарегистрироваться</a>
+        </p>
+      </form>
+    </div>
+
+    <div class="notice">
+      Доступ менеджера: логин <b>MenedjerKaust</b>, пароль <b>password</b>.
+      (Создайте суперпользователя и установите is_staff=true)
+    </div>
+  </section>
+{% endblock %}

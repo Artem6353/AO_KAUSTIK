@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Каустик-Заказ — Заказы{% endblock %}
+{% block content %}
+  <section class="section">
+    <h2>Формирование заказа</h2>
+    <p class="lead">Заполните обязательные поля и выберите продукцию.</p>
+
+    <div class="card form-card">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+          <label>ФИО подавшего</label>
+          {{ form.fio }}
+        </div>
+        <div class="field">
+          <label>Наименование организации</label>
+          {{ form.org_name }}
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>ИНН/КПП</label>
+            {{ form.inn }}
+          </div>
+          <div class="field">
+            <label>Номер телефона</label>
+            {{ form.phone }}
+          </div>
+        </div>
+        <div class="field">
+          <label>Юридический адрес</label>
+          {{ form.legal_address }}
+        </div>
+        <div class="field">
+          <label>Электронная почта</label>
+          {{ form.email }}
+        </div>
+        <div class="field">
+          <label>Выбор продукции</label>
+          {{ form.product }}
+          <div class="hint">Удерживайте Ctrl для выбора нескольких позиций.</div>
+        </div>
+        <div class="field">
+          <label>Количество (ед.)</label>
+          {{ form.qty }}
+        </div>
+        <button class="btn btn-primary" type="submit">Оформить заказ</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

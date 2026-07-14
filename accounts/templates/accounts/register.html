@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Каустик-Заказ — Регистрация{% endblock %}
+{% block content %}
+  <section class="section">
+    <h2>Регистрация</h2>
+    <p class="lead">Все поля обязательны для заполнения.</p>
+
+    <div class="card form-card">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="field">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="field-error show">{{ field.errors|striptags }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <button class="btn btn-primary" type="submit">Зарегистрироваться</button>
+        <p class="muted" style="margin-top:16px; font-size:13px;">
+          Уже есть аккаунт? <a href="{% url 'accounts:login' %}">Войти</a>
+        </p>
+      </form>
+    </div>
+  </section>
+{% endblock %}

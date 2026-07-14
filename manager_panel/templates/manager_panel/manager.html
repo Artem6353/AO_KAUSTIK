@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Каустик-Заказ — Менеджер{% endblock %}
+{% block content %}
+  <section class="section">
+    <h2>Панель менеджера</h2>
+    <p class="lead">Просмотр заказов, изменение статусов, управление номенклатурой и формирование отчёта.</p>
+
+    <h3>Все заказы</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ФИО подавшего</th>
+            <th>Организация</th>
+            <th>ИНН/КПП</th>
+            <th>Юр. адрес</th>
+            <th>Телефон</th>
+            <th>Почта</th>
+            <th>Продукция</th>
+            <th>Статус</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders %}
+            <tr>
+              <td>{{ o.fio|default:"—" }}</td>
+              <td>{{ o.org_name|default:"—" }}</td>
+              <td>{{ o.inn|default:"—" }}</td>
+              <td>{{ o.legal_address|default:"—" }}</td>
+              <td>{{ o.phone|default:"—" }}</td>
+              <td>{{ o.email|default:"—" }}</td>
+              <td>
+                {% for it in o.items %}{{ it.name }} × {{ it.qty }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+              </td>
+              <td>
+                <span class="status status-{% if o.status == 'новое' %}new{% elif o.status == 'подтверждено' %}ok{% else %}rej{% endif %}">{{ o.status }}</span>
+              </td>
+              <td>
+                <form method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="order_id" value="{{ o.id }}" />
+                  <button type="submit" name="confirm" value="1" class="btn btn-sm btn-primary">Подтвердить</button>
+                  <button type="submit" name="reject" value="1" class="btn btn-sm btn-danger">Отклонить</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="9" class="muted">Заказов пока нет.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:36px;">Номенклатура (товары)</h3>
+    <div class="card form-card">
+      <form method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label>Наименование продукции</label>
+          <input type="text" name="name" placeholder="Например: Хлор технический" />
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Количество</label>
+            <input type="number" name="quantity" min="0" placeholder="0" />
+          </div>
+          <div class="field">
+            <label>Цена, ₽</label>
+            <input type="number" name="price" min="0" step="0.01" placeholder="0" />
+          </div>
+        </div>
+        <button type="submit" name="add_product" class="btn btn-primary">Добавить товар</button>
+      </form>
+    </div>
+
+    <div class="table-wrap" style="margin-top:18px;">
+      <table>
+        <thead>
+          <tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Действие</th></tr>
+        </thead>
+        <tbody>
+          {% for p in products %}
+            <tr>
+              <td>{{ p.name }}</td>
+              <td>{{ p.quantity }}</td>
+              <td>{{ p.price|floatformat:2 }} ₽</td>
+              <td>
+                <a href="{% url 'admin:orders_product_change' p.id %}" class="btn btn-sm btn-ghost">Изменить</a>
+                <a href="{% url 'admin:orders_product_delete' p.id %}" class="btn btn-sm btn-danger">Удалить</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="muted">Номенклатура пуста.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:36px;">Формирование отчёта</h3>
+    <div class="card form-card">
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="build_report" class="btn btn-ghost">Сформировать отчёт</button>
+      </form>
+      {% if report %}
+        <div class="notice" style="display:block; white-space:pre-wrap; margin-top:12px;">{{ report }}</div>
+        <button onclick="window.print()" class="btn btn-sm btn-ghost" style="margin-top:12px;">Печать отчёта</button>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

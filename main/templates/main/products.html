@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Каустик-Заказ — Продукция{% endblock %}
+{% block content %}
+  <section class="section">
+    <h2>Продукция</h2>
+    <p class="lead">Номенклатура продукции АО «Каустик», доступной для заказа.</p>
+    <div class="product-grid">
+      {% for p in products %}
+        <div class="product fade-up">
+          <div class="name">{{ p.name }}</div>
+          <div class="meta">В наличии: {{ p.quantity }} ед.</div>
+          <div class="price">{{ p.price|floatformat:2 }} ₽</div>
+          {% if is_manager %}
+            <div class="mgr-actions">
+              <a href="#" class="btn btn-sm btn-ghost">Изменить</a>
+              <a href="#" class="btn btn-sm btn-danger">Удалить</a>
+            </div>
+          {% endif %}
+        </div>
+      {% empty %}
+        <p class="muted">Пока нет доступной продукции.</p>
+      {% endfor %}
+    </div>
+
+    {% if is_manager %}
+      <div style="margin-top:24px;">
+        <h3>Управление номенклатурой (менеджер)</h3>
+        <div class="card form-card" style="margin-top:12px;">
+          <form method="post" action="{% url 'manager_panel:dashboard' %}">
+            {% csrf_token %}
+            <div class="field">
+              <label>Наименование продукции</label>
+              <input type="text" name="name" placeholder="Например: Хлор технический" />
+            </div>
+            <div class="grid grid-2">
+              <div class="field">
+                <label>Количество</label>
+                <input type="number" name="quantity" min="0" placeholder="0" />
+              </div>
+              <div class="field">
+                <label>Цена, ₽</label>
+                <input type="number" name="price" min="0" step="0.01" placeholder="0" />
+              </div>
+            </div>
+            <button type="submit" name="add_product" class="btn btn-primary">Добавить товар</button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Каустик-Заказ — История заказов{% endblock %}
+{% block content %}
+  <section class="section">
+    <h2>История заказов</h2>
+    <p class="lead">Статус ваших заказов обновляется менеджером.</p>
+    {% if orders %}
+      {% for o in orders %}
+        <div class="card" style="margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div><b>{{ o.org_name|default:"—" }}</b> · {{ o.created_at|date:"d.m.Y H:i" }}</div>
+            <span class="status status-{% if o.status == 'новое' %}new{% elif o.status == 'подтверждено' %}ok{% else %}rej{% endif %}">{{ o.status }}</span>
+          </div>
+          <div class="muted" style="margin-top:8px; font-size:14px;">
+            Продукция: {% for it in o.items %}{{ it.name }} × {{ it.qty }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}<br>
+            Сумма: <b>{{ o.total|floatformat:2 }} ₽</b>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="notice">У вас пока нет заказов. <a href="{% url 'orders:create' %}">Оформить заказ</a>.</div>
+    {% endif %}
+  </section>
+{% endblock %}
